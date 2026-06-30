@@ -39,6 +39,7 @@ const UploadLeadsModal = ({
   onOpenChange,
   onSubmit,
   uploading = false,
+  uploadProgress = 0,
   maxMb = 10,
 }) => {
   const inputRef = useRef(null);
@@ -324,7 +325,25 @@ const UploadLeadsModal = ({
           </div>
         </div>
 
-        <DialogFooter className="shrink-0 flex-row items-center justify-between gap-2 border-t border-white/10 bg-[#101010] px-6 py-4 sm:justify-between sm:space-x-0">
+        <DialogFooter className="shrink-0 flex-col items-stretch gap-3 border-t border-white/10 bg-[#101010] px-6 py-4 sm:space-x-0">
+          {uploading ? (
+            <div className="w-full space-y-2">
+              <div className="flex items-center justify-between text-xs text-[#A3A3A3]">
+                <span>Uploading file…</span>
+                <span className="tabular-nums">{uploadProgress}%</span>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+                <div
+                  className="h-full bg-[#C5A059] transition-all duration-200"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+              <p className="text-xs text-[#737373]">
+                Large CSVs are processed in the background after upload — you can close this and keep working.
+              </p>
+            </div>
+          ) : null}
+          <div className="flex flex-row items-center justify-between gap-2">
           <Button
             type="button"
             variant="outline"
@@ -351,11 +370,16 @@ const UploadLeadsModal = ({
               className="bg-emerald-600 text-white hover:bg-emerald-500 disabled:bg-emerald-900/40 disabled:text-white/60"
             >
               {uploading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading…
+                </>
               ) : (
-                <Upload className="h-4 w-4 mr-2" />
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload file
+                </>
               )}
-              Upload file
             </Button>
           </div>
         </DialogFooter>

@@ -220,6 +220,7 @@ class CampaignService:
         "$or": [
             {"futwork_pushed": {"$gt": 0}},
             {"source": "bulk_push"},
+            {"source": "csv_upload"},
         ]
     }
 

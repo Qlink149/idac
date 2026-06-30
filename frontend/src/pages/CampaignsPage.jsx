@@ -24,7 +24,7 @@ import BulkFutworkPushModal from "../components/BulkFutworkPushModal";
 import { UI_COPY } from "../lib/brandLabels";
 import EmptyState from "../components/feedback/EmptyState";
 import { CampaignSkeleton } from "../components/feedback/Skeletons";
-import { api, campaignsAPI, isBackendConfigured } from "../lib/api";
+import { api, campaignsAPI, isBackendConfigured, leadsAPI } from "../lib/api";
 
 const LEAD_UPLOAD_MAX_MB = 10;
 import { Button } from "../components/ui/button";
@@ -76,6 +76,8 @@ const CampaignsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [activeUpload, setActiveUpload] = useState(null);
   const [refreshingMain, setRefreshingMain] = useState(false);
   const [refreshingLive, setRefreshingLive] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -161,12 +163,91 @@ const CampaignsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (activeUpload?.uploadId) return;
+    const processing = uploadHistory.find(
+      (row) => row.source === "csv_upload" && row.status === "processing"
+    );
+    if (!processing) return;
+    setActiveUpload({
+      uploadId: processing.id,
+      batchName: processing.batch_name || processing.filename || "Upload",
+      rowCount: Number(processing.row_count || 0),
+      rowsProcessed: Number(processing.rows_processed || 0),
+      status: "processing",
+      phase: processing.phase || "importing_leads",
+    });
+  }, [uploadHistory, activeUpload?.uploadId]);
+
   const hasProcessingBulkPush = uploadHistory.some(
     (row) => row.source === "bulk_push" && row.status === "processing"
   );
 
+  const hasProcessingCsvUpload = uploadHistory.some(
+    (row) => row.source === "csv_upload" && row.status === "processing"
+  );
+
+  const isUploadInFlight =
+    Boolean(activeUpload && activeUpload.status === "processing") ||
+    hasProcessingCsvUpload ||
+    hasProcessingBulkPush;
+
   useEffect(() => {
-    if (!hasProcessingBulkPush || !isBackendConfigured()) return undefined;
+    if (!activeUpload?.uploadId || activeUpload.status !== "processing") return undefined;
+
+    const pollStatus = async () => {
+      try {
+        const res = await leadsAPI.getUploadStatus(activeUpload.uploadId);
+        const d = res.data || {};
+        setActiveUpload((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: d.status || prev.status,
+                phase: d.phase || prev.phase,
+                rowCount: Number(d.row_count ?? prev.rowCount),
+                rowsProcessed: Number(d.rows_processed ?? prev.rowsProcessed),
+              }
+            : prev
+        );
+
+        if (d.status === "completed") {
+          const parts = [];
+          if (d.new_leads != null) parts.push(`${d.new_leads} new`);
+          if (d.updated_leads != null) parts.push(`${d.updated_leads} updated`);
+          if (d.unprocessed) parts.push(`${d.unprocessed} skipped`);
+          if (d.futwork_pushed != null) parts.push(`${d.futwork_pushed} synced to calling`);
+          if (d.futwork_failed > 0) parts.push(`${d.futwork_failed} sync failed`);
+          toast.success(
+            parts.length ? `Upload complete: ${parts.join(", ")}` : "Upload complete"
+          );
+          setActiveUpload(null);
+          await fetchCampaign(false);
+          await fetchUploadHistory();
+          await fetchEligibleFutworkCount();
+        } else if (d.status === "failed") {
+          toast.error(d.error_message || "Lead upload failed");
+          setActiveUpload(null);
+          await fetchUploadHistory();
+        }
+      } catch {
+        /* ignore transient poll errors */
+      }
+    };
+
+    pollStatus();
+    const id = setInterval(pollStatus, 2500);
+    return () => clearInterval(id);
+  }, [
+    activeUpload?.uploadId,
+    activeUpload?.status,
+    fetchCampaign,
+    fetchUploadHistory,
+    fetchEligibleFutworkCount,
+  ]);
+
+  useEffect(() => {
+    if (!isUploadInFlight || !isBackendConfigured()) return undefined;
     const id = setInterval(async () => {
       try {
         await fetchUploadHistory();
@@ -176,7 +257,7 @@ const CampaignsPage = () => {
       }
     }, 5000);
     return () => clearInterval(id);
-  }, [hasProcessingBulkPush, fetchUploadHistory, fetchEligibleFutworkCount]);
+  }, [isUploadInFlight, fetchUploadHistory, fetchEligibleFutworkCount]);
 
   const handleMainRefresh = async () => {
     setRefreshingMain(true);
@@ -246,33 +327,42 @@ const CampaignsPage = () => {
     if (!file) return;
     const { batchName = "" } = options;
     setUploading(true);
+    setUploadProgress(0);
     const formData = new FormData();
     formData.append("file", file);
     try {
       const params = {};
       if (batchName.trim()) params.batch_name = batchName.trim();
-      const res = await api.post("/leads/upload", formData, {
+      const res = await leadsAPI.uploadCsv(formData, {
         params: Object.keys(params).length ? params : undefined,
+        onUploadProgress: (event) => {
+          if (!event.total) return;
+          setUploadProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+        },
       });
       const d = res.data || {};
-      const parts = [];
-      if (d.new != null) parts.push(`${d.new} new`);
-      if (d.updated != null) parts.push(`${d.updated} updated`);
-      if (d.unprocessed) parts.push(`${d.unprocessed} skipped`);
-      if (d.futwork_pushed != null) parts.push(`${d.futwork_pushed} synced to calling`);
-      if (d.futwork_failed != null && d.futwork_failed > 0) {
-        parts.push(`${d.futwork_failed} sync failed`);
-      }
-      toast.success(
-        parts.length ? `Upload complete: ${parts.join(", ")}` : "Upload complete"
+      const rowCount = Number(d.row_count ?? 0);
+      setActiveUpload({
+        uploadId: d.upload_id,
+        batchName: d.batch_name || batchName.trim() || file.name,
+        rowCount,
+        rowsProcessed: 0,
+        status: d.status || "processing",
+        phase: "queued",
+      });
+      toast.info(
+        rowCount > 0
+          ? `Processing ${rowCount.toLocaleString()} leads in the background…`
+          : "Upload started — processing in the background"
       );
-      await fetchCampaign(false);
       await fetchUploadHistory();
+      await fetchEligibleFutworkCount();
     } catch (e) {
       toast.error(e?.response?.data?.detail || "Failed to upload CSV");
       throw e;
     } finally {
       setUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -527,6 +617,58 @@ const CampaignsPage = () => {
                     {UI_COPY.eligiblePushHint}
                   </p>
                 ) : null}
+                {isUploadInFlight ? (
+                  <div className="rounded-lg border border-[#C5A059]/30 bg-[#C5A059]/10 px-4 py-3">
+                    <div className="flex items-start gap-3">
+                      <Loader2 className="h-5 w-5 text-[#C5A059] animate-spin flex-shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <p className="text-sm text-white font-medium">
+                          {activeUpload?.batchName
+                            ? `Processing “${activeUpload.batchName}”`
+                            : "Processing lead upload…"}
+                        </p>
+                        <p className="text-xs text-[#A3A3A3]">
+                          {activeUpload?.phase === "syncing_to_calling"
+                            ? "Syncing leads to calling engine…"
+                            : "Importing leads from CSV — you can keep using the dashboard."}
+                        </p>
+                        {activeUpload?.rowCount > 0 ? (
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-xs text-[#A3A3A3]">
+                              <span>
+                                {Number(activeUpload.rowsProcessed || 0).toLocaleString()} /{" "}
+                                {Number(activeUpload.rowCount).toLocaleString()} rows
+                              </span>
+                              <span className="tabular-nums">
+                                {Math.min(
+                                  100,
+                                  Math.round(
+                                    ((activeUpload.rowsProcessed || 0) / activeUpload.rowCount) * 100
+                                  )
+                                )}
+                                %
+                              </span>
+                            </div>
+                            <div className="h-1.5 w-full rounded-full bg-black/30 overflow-hidden">
+                              <div
+                                className="h-full bg-[#C5A059] transition-all duration-300"
+                                style={{
+                                  width: `${Math.min(
+                                    100,
+                                    Math.round(
+                                      ((activeUpload.rowsProcessed || 0) / activeUpload.rowCount) *
+                                        100
+                                    )
+                                  )}%`,
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap items-center gap-2 text-sm text-[#A3A3A3]">
                     <Clock className="h-4 w-4 text-[#C5A059]" />
@@ -676,11 +818,14 @@ const CampaignsPage = () => {
                                 {row.status === "processing" ? (
                                   <span className="inline-flex items-center gap-2 text-amber-300">
                                     <Loader2 className="h-4 w-4 animate-spin" />
-                                    Processing…
+                                    {row.row_count
+                                      ? `${row.rows_processed ?? 0}/${row.row_count}`
+                                      : "Processing…"}
                                   </span>
                                 ) : (
                                   row.processed ?? 0
                                 )}
+                              </TableCell>
                               </TableCell>
                               <TableCell className="py-3 px-4">
                                 <span className="text-[#A3A3A3] tabular-nums">
@@ -723,6 +868,7 @@ const CampaignsPage = () => {
             onOpenChange={setUploadModalOpen}
             onSubmit={handleFileSubmit}
             uploading={uploading}
+            uploadProgress={uploadProgress}
             maxMb={LEAD_UPLOAD_MAX_MB}
           />
 

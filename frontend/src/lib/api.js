@@ -119,6 +119,15 @@ export const campaignsAPI = {
     api.post("/campaigns/current/bulk-futwork-push", data),
 };
 
+export const leadsAPI = {
+  uploadCsv: (formData, config = {}) =>
+    api.post("/leads/upload", formData, {
+      ...config,
+      validateStatus: (status) => status === 202 || status === 200,
+    }),
+  getUploadStatus: (uploadId) => api.get(`/leads/upload/${uploadId}/status`),
+};
+
 export const notificationsAPI = {
   getAll: (params) => api.get("/notifications", { params }),
   markRead: (id) => api.put(`/notifications/${id}/read`),

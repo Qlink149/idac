@@ -88,6 +88,34 @@ class LeadUploadHistoryEntry(BaseModel):
     unprocessed: int = 0
     futwork_pushed: int = 0
     futwork_failed: int = 0
+    row_count: int = 0
+    rows_processed: int = 0
+    phase: str = ""
+    error_message: str = ""
+
+
+class LeadUploadStartResponse(BaseModel):
+    upload_id: str
+    status: str
+    row_count: int
+    batch_name: str = ""
+
+
+class LeadUploadStatusResponse(BaseModel):
+    upload_id: str
+    status: str
+    phase: str = ""
+    row_count: int = 0
+    rows_processed: int = 0
+    processed: int = 0
+    new_leads: int = 0
+    updated_leads: int = 0
+    unprocessed: int = 0
+    futwork_pushed: int = 0
+    futwork_failed: int = 0
+    batch_name: str = ""
+    filename: str = ""
+    error_message: str = ""
 
 
 class BulkFutworkPushRequest(BaseModel):

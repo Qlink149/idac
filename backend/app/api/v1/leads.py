@@ -11,8 +11,9 @@ from ...core.database import get_db
 from ...core.rbac import require_admin
 from ...core.security import get_current_user
 from ...services.lead_service import LeadService
+from ...services.lead_upload_service import schedule_lead_csv_upload_job
 from ...services.qualification_buckets import VALID_DASHBOARD_BUCKETS
-from ...services.campaign_service import CampaignService
+from ...models.campaign import LeadUploadStartResponse, LeadUploadStatusResponse
 from ...services.assignment_service import AssignmentService, rep_lead_filter
 from ...models.lead import LeadDetail
 from ...core.time_utils import serialize_datetime_utc
@@ -38,8 +39,6 @@ def _serialize_call_timestamps(doc: dict) -> tuple:
     iso = serialize_datetime_utc(ts)
     return iso, iso
 router = APIRouter()
-
-_FAILURE_INSERT_CHUNK = 1000
 
 SALES_QUALIFICATION_VALUES = frozenset(
     {"Cold Qualified", "Hot Lead", "Warm Lead"}
@@ -338,7 +337,7 @@ def _default_batch_name(filename: Optional[str]) -> str:
     return base[:200]
 
 
-@router.post("/upload")
+@router.post("/upload", response_model=LeadUploadStartResponse, status_code=202)
 async def upload_leads(
     file: UploadFile = File(...),
     batch_name: Optional[str] = Query(None),
@@ -411,107 +410,76 @@ async def upload_leads(
     if row_count == 0:
         raise HTTPException(status_code=400, detail="CSV contains no data rows")
 
-    service = LeadService(db)
-    result = await service.upsert_from_csv(
-        rows,
-        upload_batch_id=upload_id,
-        upload_batch_name=resolved_batch,
-        auto_assign_new=True,
-    )
-
-    processed     = int(result.get("processed", 0) or 0)
-    new_count     = int(result.get("new", 0) or 0)
-    updated_count = int(result.get("updated", 0) or 0)
-    failed_rows   = result.get("failed_rows", []) or []
-    unprocessed   = len(failed_rows)
-
-    # ---- Persist failed rows (chunked) so they're downloadable -------------
-    if failed_rows:
-        try:
-            failure_docs = [
-                {
-                    "upload_id": upload_id,
-                    "row_index": int(f.get("row_index", -1)),
-                    "reason": f.get("reason", ""),
-                    "raw": f.get("raw", {}),
-                    "created_at": datetime.utcnow(),
-                }
-                for f in failed_rows
-            ]
-            for i in range(0, len(failure_docs), _FAILURE_INSERT_CHUNK):
-                await db.lead_upload_failures.insert_many(
-                    failure_docs[i : i + _FAILURE_INSERT_CHUNK],
-                    ordered=False,
-                )
-        except Exception:
-            logger.exception(
-                "Failed to persist lead_upload_failures | upload_id=%s | count=%s",
-                upload_id,
-                len(failed_rows),
-            )
-
-    pushed_count = 0
-    failed_count = 0
-    if push_to_futwork:
-        if not (settings.FUTWORK_API_KEY or "").strip() or not (settings.FUTWORK_CAMPAIGN_ID or "").strip():
-            raise HTTPException(
-                status_code=503,
-                detail="Calling Engine is not configured on the server (missing API key / campaign ID).",
-            )
-        upload_campaign_id = None
-        try:
-            cs = CampaignService(db)
-            doc = await cs.find_campaign_by_futwork_settings()
-            if doc and doc.get("id"):
-                upload_campaign_id = str(doc["id"])
-        except Exception:
-            logger.exception(
-                "upload_leads: failed to resolve campaign for Futwork tagging",
-            )
-        leads_to_push = await service.leads_for_futwork_push_by_batch(upload_id)
-        pushed_count, failed_count = await service.push_to_futwork(
-            leads_to_push,
-            campaign_id=upload_campaign_id,
-        )
-        result["futwork_pushed"] = pushed_count
-        result["futwork_failed"] = failed_count
-
-    # ---- History summary ---------------------------------------------------
     history_doc = {
         "id": upload_id,
+        "source": "csv_upload",
+        "status": "processing",
+        "phase": "queued",
         "created_at": datetime.utcnow(),
         "filename": file.filename or "upload.csv",
         "batch_name": resolved_batch,
         "original_csv_secure_url": original_csv_secure_url,
         "original_csv_public_id": original_csv_public_id,
-        "processed": processed,
-        "new_leads": new_count,
-        "updated_leads": updated_count,
-        "unprocessed": unprocessed,
+        "processed": 0,
+        "new_leads": 0,
+        "updated_leads": 0,
+        "unprocessed": 0,
         "row_count": row_count,
+        "rows_processed": 0,
         "csv_headers": [str(c) for c in df.columns.tolist()],
-        "futwork_pushed": pushed_count if push_to_futwork else 0,
-        "futwork_failed": failed_count if push_to_futwork else 0,
+        "futwork_pushed": 0,
+        "futwork_failed": 0,
+        "push_to_futwork": bool(push_to_futwork),
     }
-    if pushed_count > 0:
-        try:
-            await db.lead_upload_history.insert_one(history_doc)
-        except Exception:
-            logger.exception(
-                "Failed to record lead_upload_history | upload_id=%s", upload_id
-            )
+    try:
+        await db.lead_upload_history.insert_one(history_doc)
+    except Exception:
+        logger.exception("Failed to record lead_upload_history | upload_id=%s", upload_id)
+        raise HTTPException(status_code=500, detail="Could not start upload job")
 
-    return {
-        "upload_id": upload_id,
-        "count": processed,
-        "new": new_count,
-        "updated": updated_count,
-        "processed": processed,
-        "unprocessed": unprocessed,
-        "row_count": row_count,
-        "futwork_pushed": pushed_count if push_to_futwork else 0,
-        "futwork_failed": failed_count if push_to_futwork else 0,
-    }
+    schedule_lead_csv_upload_job(
+        upload_id=upload_id,
+        rows=rows,
+        resolved_batch=resolved_batch,
+        filename=file.filename or "upload.csv",
+        csv_headers=[str(c) for c in df.columns.tolist()],
+        original_csv_secure_url=original_csv_secure_url,
+        original_csv_public_id=original_csv_public_id,
+        push_to_futwork=push_to_futwork,
+    )
+
+    return LeadUploadStartResponse(
+        upload_id=upload_id,
+        status="processing",
+        row_count=row_count,
+        batch_name=resolved_batch,
+    )
+
+
+@router.get("/upload/{upload_id}/status", response_model=LeadUploadStatusResponse)
+async def get_lead_upload_status(upload_id: str, db=Depends(get_db)):
+    doc = await db.lead_upload_history.find_one({"id": upload_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Upload not found")
+    return LeadUploadStatusResponse(
+        upload_id=upload_id,
+        status=str(doc.get("status") or "unknown"),
+        phase=str(doc.get("phase") or ""),
+        row_count=int(doc.get("row_count") or 0),
+        rows_processed=int(doc.get("rows_processed") or 0),
+        processed=int(doc.get("processed") or 0),
+        new_leads=int(doc.get("new_leads") or 0),
+        updated_leads=int(doc.get("updated_leads") or 0),
+        unprocessed=int(doc.get("unprocessed") or 0),
+        futwork_pushed=int(doc.get("futwork_pushed") or 0),
+        futwork_failed=int(doc.get("futwork_failed") or 0),
+        batch_name=str(doc.get("batch_name") or ""),
+        filename=str(doc.get("filename") or ""),
+        error_message=str(doc.get("error_message") or ""),
+    )
+
+
+# Legacy synchronous upload body removed — processing runs in background.
 
 
 @router.patch("/{lead_id}/assign")
