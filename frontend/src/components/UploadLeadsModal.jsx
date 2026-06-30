@@ -382,6 +382,7 @@ const UploadLeadsModal = ({
               )}
             </Button>
           </div>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

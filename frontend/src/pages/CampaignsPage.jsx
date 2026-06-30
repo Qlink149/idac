@@ -826,7 +826,6 @@ const CampaignsPage = () => {
                                   row.processed ?? 0
                                 )}
                               </TableCell>
-                              </TableCell>
                               <TableCell className="py-3 px-4">
                                 <span className="text-[#A3A3A3] tabular-nums">
                                   {(row.unprocessed || 0) + (row.futwork_failed || 0)}
