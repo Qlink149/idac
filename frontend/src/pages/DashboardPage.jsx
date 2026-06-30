@@ -256,7 +256,7 @@ const DashboardPage = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="relative rounded-xl overflow-hidden h-40 md:h-48"
+        className="relative rounded-xl overflow-hidden h-40 md:h-48 hero-banner"
         data-testid="hero-banner"
       >
         <img

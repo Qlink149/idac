@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 import NotificationBell from './NotificationBell';
 import BrandLogo from '../shared/BrandLogo';
 import { isPathLocked, isPathPreview } from '../../lib/featureAccess';
@@ -29,10 +30,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
+  const { darkMode, toggleDarkMode } = useTheme();
 
   const navItems = [
     ...(isAdmin
@@ -54,25 +52,9 @@ const DashboardLayout = () => {
     ...(isAdmin ? [{ path: '/settings', icon: Settings, label: 'Settings' }] : []),
   ];
 
-  useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
-    // Apply theme to document
-    if (darkMode) {
-      document.documentElement.classList.remove('light-mode');
-      document.documentElement.classList.add('dark-mode');
-    } else {
-      document.documentElement.classList.remove('dark-mode');
-      document.documentElement.classList.add('light-mode');
-    }
-  }, [darkMode]);
-
   const handleLogout = () => {
     logout();
     navigate('/login', { replace: true });
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
   };
 
   const renderNavLink = (item, onNavigate) => {

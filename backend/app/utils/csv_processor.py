@@ -189,8 +189,8 @@ def _cell(row: Dict[str, Any], *keys: str) -> str:
 
 def process_lead_upload_row(row: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Flexible CSV upload: Name + Mobile (required), optional Lead ID, or full presales dump.
-    IDAC identity is mobile_digits; client_lead_id is optional legacy correlation.
+    CSV upload: Name + Mobile (required). Identity is mobile_digits (unique).
+    Presales dump rows are detected by presales-specific columns.
     """
     r = row or {}
     if _cell(r, "Presales Agent") or _cell(r, "Presales Last Call Attempt Status"):
@@ -207,13 +207,6 @@ def process_lead_upload_row(row: Dict[str, Any]) -> Dict[str, Any]:
     if len(mobile_digits) != 10:
         return {}
 
-    client_lead_id = _cell(
-        r,
-        "Lead ID",
-        "Lead Id",
-        "lead_id",
-        "client_lead_id",
-    )
     name = _cell(r, "Name", "Full Name", "Last Name", "customer_name")
 
     lead: Dict[str, Any] = {
@@ -222,9 +215,6 @@ def process_lead_upload_row(row: Dict[str, Any]) -> Dict[str, Any]:
         "project": _cell(r, "Project"),
         "updated_at": datetime.utcnow(),
     }
-    if client_lead_id:
-        lead["client_lead_id"] = client_lead_id
-        lead["external_id"] = client_lead_id
     if name:
         lead["full_name"] = name
         if _cell(r, "Last Name") or r.get("Last Name") is not None:

@@ -20,7 +20,6 @@ import { Input } from "./ui/input";
 const TEMPLATE_HEADERS = [
   { key: "Name", required: true },
   { key: "Mobile", required: true },
-  { key: "Lead ID", required: false },
 ];
 
 const TEMPLATE_CSV =
@@ -281,7 +280,7 @@ const UploadLeadsModal = ({
               </Button>
             </div>
             <div className="rounded-md border border-white/10 overflow-hidden">
-              <div className="grid grid-cols-3 bg-white/[0.03] px-4 py-2 text-xs font-medium text-white">
+              <div className="grid grid-cols-2 bg-white/[0.03] px-4 py-2 text-xs font-medium text-white">
                 {TEMPLATE_HEADERS.map((h) => (
                   <span key={h.key} className="truncate">
                     {h.key}
@@ -289,7 +288,7 @@ const UploadLeadsModal = ({
                   </span>
                 ))}
               </div>
-              <div className="grid grid-cols-3 px-4 py-2 text-xs italic text-[#525252]">
+              <div className="grid grid-cols-2 px-4 py-2 text-xs italic text-[#525252]">
                 {TEMPLATE_HEADERS.map((h) => (
                   <span key={`sample-${h.key}`}>sample value</span>
                 ))}
@@ -306,18 +305,17 @@ const UploadLeadsModal = ({
                 <ul className="list-disc pl-5 space-y-1 text-blue-200/90">
                   <li>Only CSV file format is supported with a maximum of 20,000 rows.</li>
                   <li>
-                    First row must contain column headers. Aliases accepted (e.g. Lead Id,
-                    Mobile Number, Full Name).
+                    First row must contain column headers. Aliases accepted (e.g. Mobile Number,
+                    Full Name).
                   </li>
                   <li>
-                    <span className="text-red-400">Mobile</span> is required (10-digit Indian
-                    number). Each mobile is unique — re-uploading the same number updates the
-                    existing lead.
+                    <span className="text-red-400">Name</span> and{" "}
+                    <span className="text-red-400">Mobile</span> are required. Mobile must be a
+                    valid 10-digit Indian number.
                   </li>
                   <li>
-                    <span className="text-white">Name</span> is recommended.{" "}
-                    <span className="text-white">Lead ID</span> is optional if your CSV includes
-                    it.
+                    Each <span className="text-white">mobile number is unique</span>. Re-uploading
+                    the same number updates the lead and triggers a new dial.
                   </li>
                 </ul>
               </div>

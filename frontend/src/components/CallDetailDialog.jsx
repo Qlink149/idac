@@ -25,6 +25,7 @@ import { parseCallTranscriptTurns, WHITELABEL_AGENT_LABEL } from "../utils/callT
 import { formatDateTimeIST } from "../lib/dateUtils";
 import { isVirtualCustomerLocked, navigateToVirtualCustomer } from "../lib/featureAccess";
 import { getIdacDispositionBadgeClass } from "../lib/idacDispositions";
+import { getCallStatusBadgeClass } from "../lib/callStatusBadges";
 
 const formatDuration = (seconds) => {
   if (!seconds) return "0s";
@@ -38,15 +39,7 @@ const formatDate = (dateStr) => formatDateTimeIST(dateStr);
 
 const getDispositionBadge = (d) => getIdacDispositionBadgeClass(d);
 
-const STATUS_STYLES = {
-  completed: "bg-emerald-900/30 text-emerald-300",
-  "no-answer": "bg-yellow-900/30 text-yellow-300",
-  busy: "bg-orange-900/30 text-orange-300",
-  failed: "bg-red-900/30 text-red-300",
-};
-
-const getStatusBadge = (s) =>
-  STATUS_STYLES[s] || "bg-gray-900/30 text-gray-300";
+const getStatusBadge = (s) => getCallStatusBadgeClass(s);
 
 const StatusIcon = ({ status }) => {
   switch (status) {

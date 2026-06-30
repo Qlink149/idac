@@ -606,10 +606,9 @@ const CampaignsPage = () => {
             {uploadSectionOpen && (
               <CardContent className="space-y-4">
                 <p className="text-sm text-[#A3A3A3]">
-                  CSV columns: <span className="text-white">Name</span>,{" "}
-                  <span className="text-white">Mobile</span> (required). Optional{" "}
-                  <span className="text-white">Lead ID</span> (flexible header names accepted).
-                  Each mobile is unique — re-uploading the same number updates the existing lead.
+                  CSV columns: <span className="text-white">Name</span> and{" "}
+                  <span className="text-white">Mobile</span> (both required). Each mobile is
+                  unique — re-uploading the same number updates the lead and redials.
                 </p>
                 {eligibleFutworkCount != null ? (
                   <p className="text-sm text-[#A3A3A3] rounded-lg border border-white/5 bg-white/[0.02] px-4 py-3">

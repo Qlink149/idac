@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { toast } from "sonner";
 import { Eye, EyeOff, Building2 } from "lucide-react";
 import { BRAND } from "../lib/brandConfig";
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const [showTransition, setShowTransition] = useState(false);
   const [error, setError] = useState("");
   const { login } = useAuth();
+  const { darkMode } = useTheme();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -86,7 +88,7 @@ const LoginPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <BrandLogo variant="splash" darkBackground className="mb-8" />
+              <BrandLogo variant="splash" darkBackground={darkMode} className="mb-8" />
             </motion.div>
             <motion.div className="relative w-full max-w-2xl h-48 overflow-hidden">
               <motion.div
@@ -155,7 +157,7 @@ const LoginPage = () => {
             transition={{ delay: 0.8 }}
             data-testid="login-logo"
           >
-            <BrandLogo variant="login" darkBackground testId="login-logo" />
+            <BrandLogo variant="login" darkBackground={darkMode} testId="login-logo" />
           </motion.div>
 
           <motion.div

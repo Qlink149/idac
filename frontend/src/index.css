@@ -31,7 +31,7 @@
 }
 
 .light-mode .glass-card {
-    background: rgba(255, 255, 255, 0.85) !important;
+    background: rgba(255, 255, 255, 0.92) !important;
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border: 1px solid #E0E0E0 !important;
@@ -39,7 +39,7 @@
 }
 
 .light-mode .glass {
-    background: rgba(255, 255, 255, 0.7) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
     border: 1px solid #E0E0E0 !important;
 }
 
@@ -48,39 +48,421 @@
     border-color: rgba(197, 160, 89, 0.4) !important;
 }
 
+.light-mode .surface-elevated {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-color: #E0E0E0 !important;
+    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.12) !important;
+}
+
+.light-mode .metric-gradient {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 240, 0.98) 100%) !important;
+}
+
+.light-mode .hover-lift:hover {
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.12) !important;
+}
+
 /* Light mode text overrides */
-.light-mode h1, .light-mode h2, .light-mode h3 { color: #1A1A2E !important; }
-.light-mode .text-white { color: #1A1A2E !important; }
-.light-mode .text-\[\#A1A1AA\] { color: #4A4A5A !important; }
-.light-mode .text-\[\#52525B\] { color: #71717A !important; }
-.light-mode .text-\[\#EDEDED\] { color: #1A1A2E !important; }
+.light-mode h1,
+.light-mode h2,
+.light-mode h3 {
+    color: #1A1A2E !important;
+}
+
+.light-mode .text-white {
+    color: #1A1A2E !important;
+}
+
+.light-mode .text-white\/60 {
+    color: rgba(26, 26, 46, 0.6) !important;
+}
+
+/* Hero banners: keep light text on dark image overlays in both themes */
+.light-mode .hero-banner h1,
+.light-mode .hero-banner h2,
+.light-mode .hero-banner h3,
+.light-mode .hero-banner .text-white {
+    color: #FFFFFF !important;
+}
+
+.light-mode .hero-banner .text-white\/70 {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.light-mode .text-\[\#A1A1AA\] {
+    color: #4A4A5A !important;
+}
+
+.light-mode .text-\[\#52525B\] {
+    color: #71717A !important;
+}
+
+.light-mode .text-\[\#EDEDED\] {
+    color: #1A1A2E !important;
+}
+
+.light-mode .text-\[\#737373\] {
+    color: #6B7280 !important;
+}
+
+.light-mode .text-\[\#A3A3A3\] {
+    color: #4B5563 !important;
+}
+
+.light-mode .text-\[\#525252\] {
+    color: #6B7280 !important;
+}
+
+.light-mode .placeholder\:text-\[\#525252\]::placeholder {
+    color: #9CA3AF !important;
+}
+
+.light-mode .hover\:text-white:hover {
+    color: #1A1A2E !important;
+}
 
 /* Light mode backgrounds */
-.light-mode .bg-\[\#0A0A0A\] { background-color: #F5F5F0 !important; }
-.light-mode .bg-\[\#1A1A1A\] { background-color: #FFFFFF !important; }
-.light-mode .bg-\[\#0F0F0F\] { background-color: #FAFAF8 !important; }
-.light-mode .bg-black\/50 { background-color: rgba(255,255,255,0.8) !important; }
-.light-mode .bg-black\/30 { background-color: rgba(245,245,240,0.8) !important; }
+.light-mode .bg-\[\#0A0A0A\] {
+    background-color: #F5F5F0 !important;
+}
+
+.light-mode .bg-\[\#1A1A1A\] {
+    background-color: #FFFFFF !important;
+}
+
+.light-mode .bg-\[\#141414\] {
+    background-color: #FFFFFF !important;
+}
+
+.light-mode .bg-\[\#101010\] {
+    background-color: #F8F8F5 !important;
+}
+
+.light-mode .bg-\[\#0F0F0F\] {
+    background-color: #FAFAF8 !important;
+}
+
+.light-mode .bg-\[\#0E0E0E\] {
+    background-color: #F3F3EF !important;
+}
+
+.light-mode .bg-\[\#262626\] {
+    background-color: #EDEDE8 !important;
+}
+
+.light-mode .bg-black\/50 {
+    background-color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.light-mode .bg-black\/40 {
+    background-color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.light-mode .bg-black\/60 {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.light-mode .bg-black\/30 {
+    background-color: rgba(245, 245, 240, 0.92) !important;
+}
+
+.light-mode .bg-black\/80 {
+    background-color: rgba(0, 0, 0, 0.45) !important;
+}
+
+.light-mode .from-\[\#0A0A0A\] {
+    --tw-gradient-from: #F5F5F0 var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgb(245 245 240 / 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.light-mode .via-\[\#0A0A0A\]\/70 {
+    --tw-gradient-via: rgb(245 245 240 / 0.72) var(--tw-gradient-via-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to) !important;
+}
+
+.light-mode .bg-white\/10 {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-mode .bg-white\/15 {
+    background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-mode .bg-white\/\[0\.02\] {
+    background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+.light-mode .bg-white\/\[0\.03\] {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.light-mode .bg-white\/\[0\.04\] {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.light-mode .bg-white\/\[0\.05\] {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-mode .from-\[\#1A1A1A\] {
+    --tw-gradient-from: #FFFFFF var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.light-mode .to-\[\#0E0E0E\] {
+    --tw-gradient-to: #F3F3EF var(--tw-gradient-to-position) !important;
+}
 
 /* Light mode borders */
-.light-mode .border-white\/10 { border-color: #E0E0E0 !important; }
-.light-mode .border-white\/5 { border-color: #EBEBEB !important; }
-.light-mode .border-white\/20 { border-color: #D0D0D0 !important; }
+.light-mode .border-white\/10 {
+    border-color: #E0E0E0 !important;
+}
+
+.light-mode .border-white\/5 {
+    border-color: #EBEBEB !important;
+}
+
+.light-mode .border-white\/15 {
+    border-color: #D8D8D8 !important;
+}
+
+.light-mode .border-white\/20 {
+    border-color: #D0D0D0 !important;
+}
+
+.light-mode .border-l-white\/5 {
+    border-left-color: #EBEBEB !important;
+}
 
 /* Light mode hover states */
-.light-mode .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.04) !important; }
-.light-mode .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.06) !important; }
+.light-mode .hover\:bg-white\/5:hover {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.light-mode .hover\:bg-white\/10:hover {
+    background-color: rgba(0, 0, 0, 0.06) !important;
+}
 
 /* Light mode sidebar & header */
-.light-mode .bg-\[\#0A0A0A\]\/80 { background-color: rgba(255,255,255,0.92) !important; }
+.light-mode .bg-\[\#0A0A0A\]\/80 {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Light mode info / alert panels */
+.light-mode .border-blue-500\/20 {
+    border-color: rgba(37, 99, 235, 0.25) !important;
+}
+
+.light-mode .bg-blue-500\/10 {
+    background-color: rgba(37, 99, 235, 0.08) !important;
+}
+
+.light-mode .text-blue-200,
+.light-mode .text-blue-200\/90 {
+    color: #1D4ED8 !important;
+}
+
+.light-mode .text-blue-300 {
+    color: #2563EB !important;
+}
+
+/* Light mode status badge surfaces (keep hue, lighten bg) */
+.light-mode .bg-emerald-900\/30 {
+    background-color: rgba(5, 150, 105, 0.12) !important;
+}
+
+.light-mode .bg-emerald-900\/20,
+.light-mode .bg-emerald-600\/20 {
+    background-color: rgba(5, 150, 105, 0.1) !important;
+}
+
+.light-mode .text-emerald-300 {
+    color: #047857 !important;
+}
+
+.light-mode .border-emerald-500\/30,
+.light-mode .border-emerald-800\/50 {
+    border-color: rgba(5, 150, 105, 0.35) !important;
+}
+
+.light-mode .bg-amber-900\/30 {
+    background-color: rgba(217, 119, 6, 0.12) !important;
+}
+
+.light-mode .bg-amber-600\/20 {
+    background-color: rgba(217, 119, 6, 0.1) !important;
+}
+
+.light-mode .text-amber-300 {
+    color: #B45309 !important;
+}
+
+.light-mode .border-amber-500\/30 {
+    border-color: rgba(217, 119, 6, 0.35) !important;
+}
+
+.light-mode .hover\:bg-amber-900\/20:hover {
+    background-color: rgba(217, 119, 6, 0.1) !important;
+}
+
+.light-mode .bg-blue-900\/30 {
+    background-color: rgba(37, 99, 235, 0.12) !important;
+}
+
+.light-mode .bg-blue-500\/20 {
+    background-color: rgba(37, 99, 235, 0.1) !important;
+}
+
+.light-mode .text-blue-300 {
+    color: #1D4ED8 !important;
+}
+
+.light-mode .border-blue-500\/30 {
+    border-color: rgba(37, 99, 235, 0.35) !important;
+}
+
+/* Disposition / status pill badges (Call History, lead cards) */
+.light-mode .bg-yellow-900\/30 {
+    background-color: rgba(202, 138, 4, 0.14) !important;
+}
+
+.light-mode .text-yellow-300 {
+    color: #A16207 !important;
+}
+
+.light-mode .border-yellow-500\/30 {
+    border-color: rgba(202, 138, 4, 0.38) !important;
+}
+
+.light-mode .bg-orange-900\/30 {
+    background-color: rgba(234, 88, 12, 0.13) !important;
+}
+
+.light-mode .text-orange-300 {
+    color: #C2410C !important;
+}
+
+.light-mode .border-orange-500\/30 {
+    border-color: rgba(234, 88, 12, 0.38) !important;
+}
+
+.light-mode .bg-sky-900\/30 {
+    background-color: rgba(14, 165, 233, 0.13) !important;
+}
+
+.light-mode .text-sky-300 {
+    color: #0369A1 !important;
+}
+
+.light-mode .border-sky-500\/30 {
+    border-color: rgba(14, 165, 233, 0.38) !important;
+}
+
+.light-mode .bg-purple-900\/30 {
+    background-color: rgba(147, 51, 234, 0.12) !important;
+}
+
+.light-mode .text-purple-300 {
+    color: #7E22CE !important;
+}
+
+.light-mode .border-purple-500\/30 {
+    border-color: rgba(147, 51, 234, 0.35) !important;
+}
+
+.light-mode .bg-red-900\/30 {
+    background-color: rgba(220, 38, 38, 0.12) !important;
+}
+
+.light-mode .text-red-300 {
+    color: #B91C1C !important;
+}
+
+.light-mode .border-red-500\/30 {
+    border-color: rgba(220, 38, 38, 0.35) !important;
+}
+
+.light-mode .bg-gray-900\/30 {
+    background-color: rgba(55, 65, 81, 0.1) !important;
+}
+
+.light-mode .text-gray-300 {
+    color: #4B5563 !important;
+}
+
+.light-mode .border-gray-500\/30 {
+    border-color: rgba(107, 114, 128, 0.35) !important;
+}
+
+.light-mode .bg-zinc-800\/60 {
+    background-color: rgba(82, 82, 91, 0.12) !important;
+}
+
+.light-mode .text-zinc-300 {
+    color: #52525B !important;
+}
+
+.light-mode .bg-indigo-900\/30 {
+    background-color: rgba(79, 70, 229, 0.12) !important;
+}
+
+.light-mode .text-indigo-300 {
+    color: #4338CA !important;
+}
+
+.light-mode .border-indigo-500\/30 {
+    border-color: rgba(79, 70, 229, 0.35) !important;
+}
+
+.light-mode .text-emerald-400 {
+    color: #047857 !important;
+}
+
+.light-mode .bg-red-500\/5 {
+    background-color: rgba(220, 38, 38, 0.06) !important;
+}
+
+.light-mode .border-red-500\/20 {
+    border-color: rgba(220, 38, 38, 0.25) !important;
+}
+
+.light-mode .bg-\[\#C5A059\]\/5 {
+    background-color: rgba(197, 160, 89, 0.08) !important;
+}
+
+.light-mode .bg-\[\#C5A059\]\/15 {
+    background-color: rgba(197, 160, 89, 0.14) !important;
+}
+
+.light-mode .text-\[\#F2D9A8\] {
+    color: #8A7039 !important;
+}
+
+.light-mode .hover\:bg-red-900\/20:hover {
+    background-color: rgba(220, 38, 38, 0.08) !important;
+}
+
+.light-mode .bg-red-900\/20 {
+    background-color: rgba(220, 38, 38, 0.08) !important;
+}
+
+.light-mode .hover\:border-red-500\/40:hover {
+    border-color: rgba(220, 38, 38, 0.35) !important;
+}
 
 /* Light mode inputs */
-.light-mode input, .light-mode textarea, .light-mode select {
-    background-color: #F5F5F0 !important;
+.light-mode input,
+.light-mode textarea,
+.light-mode select {
+    background-color: #FFFFFF !important;
     border-color: #D0D0D0 !important;
     color: #1A1A2E !important;
 }
-.light-mode input::placeholder, .light-mode textarea::placeholder {
+
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
     color: #9CA3AF !important;
 }
 
@@ -89,21 +471,55 @@
 .light-mode .recharts-cartesian-grid-vertical line {
     stroke: rgba(0, 0, 0, 0.08) !important;
 }
-.light-mode .recharts-text { fill: #4A4A5A !important; }
+
+.light-mode .recharts-text {
+    fill: #4A4A5A !important;
+}
 
 /* Light mode scrollbar */
-.light-mode ::-webkit-scrollbar-track { background: #F0F0F0; }
-.light-mode ::-webkit-scrollbar-thumb { background: #C5A059; }
+.light-mode ::-webkit-scrollbar-track {
+    background: #F0F0F0;
+}
+
+.light-mode ::-webkit-scrollbar-thumb {
+    background: #C5A059;
+}
 
 /* Light mode table */
-.light-mode table th { color: #71717A !important; }
-.light-mode table td { color: #1A1A2E; }
-.light-mode tr.border-b { border-color: #EBEBEB !important; }
+.light-mode table th {
+    color: #71717A !important;
+}
 
-/* Light mode popover/dropdown */
+.light-mode table td {
+    color: #1A1A2E;
+}
+
+.light-mode tr.border-b {
+    border-color: #EBEBEB !important;
+}
+
+/* Light mode popover/dropdown/tooltip */
 .light-mode [data-radix-popper-content-wrapper] > div {
     background-color: #FFFFFF !important;
     border-color: #E0E0E0 !important;
+    color: #1A1A2E !important;
+}
+
+.light-mode [role="tooltip"] {
+    background-color: #FFFFFF !important;
+    border-color: #E0E0E0 !important;
+    color: #1A1A2E !important;
+}
+
+/* Light mode skeleton shimmer */
+.light-mode .skeleton-block {
+    background: linear-gradient(
+        90deg,
+        #E8E8E3 0%,
+        #F5F5F0 40%,
+        #E8E8E3 80%
+    ) !important;
+    background-size: 200% 100% !important;
 }
 
 /* Light mode shadcn overrides */
@@ -488,6 +904,28 @@ select {
 
 .scrollbar-luxe::-webkit-scrollbar-thumb:hover {
     background: var(--gold);
+}
+
+/* Skeleton loading blocks */
+.skeleton-block {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.04) 0%,
+        rgba(255, 255, 255, 0.1) 40%,
+        rgba(255, 255, 255, 0.04) 80%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    border-radius: 0.375rem;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 /* Animation Delays */

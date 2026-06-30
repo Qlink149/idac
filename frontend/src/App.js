@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import { Toaster } from "./components/ui/sonner";
 import PremiumLockedPage from "./components/shared/PremiumLockedPage";
 import { isFeatureLocked, isVcPreviewMode } from "./lib/featureAccess";
@@ -207,23 +208,20 @@ function AppRoutes() {
   );
 }
 
+function ThemedToaster() {
+  const { darkMode } = useTheme();
+  return <Toaster position="top-right" theme={darkMode ? "dark" : "light"} />;
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-        <Toaster
-          position="top-right"
-          theme="dark"
-          toastOptions={{
-            style: {
-              background: "#1A1A1A",
-              color: "#EDEDED",
-              border: "1px solid rgba(255,255,255,0.1)",
-            },
-          }}
-        />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+          <ThemedToaster />
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

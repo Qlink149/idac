@@ -315,9 +315,8 @@ class LeadService:
 
                 if existing:
                     patch = dict(lead_data)
-                    patch.pop("futwork_sync_status", None)
-                    if str(existing.get("futwork_lead_id") or "").strip():
-                        patch.pop("futwork_lead_id", None)
+                    # Re-upload same mobile → queue another Futwork dial.
+                    patch["futwork_sync_status"] = "pending"
                     if not str(lead_data.get("client_lead_id") or "").strip():
                         patch.pop("client_lead_id", None)
                         patch.pop("external_id", None)
@@ -586,8 +585,8 @@ class LeadService:
         """
         Load leads from DB for Futwork push after CSV upload.
 
-        By default only pending/failed sync rows are pushed (avoids duplicate
-        pushes on re-upload of already-pushed leads).
+        By default only pending/failed sync rows are pushed. CSV re-upload sets
+        existing leads back to pending so they are included again (redial).
         """
         batch_id = (upload_batch_id or "").strip()
         if not batch_id:

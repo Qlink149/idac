@@ -8,7 +8,7 @@ export const IDAC_DISPOSITIONS = [
     filterKey: "Dropped",
     color: "#059669",
     borderClass: "border-red-500",
-    badgeClass: "bg-orange-900/30 text-orange-300 border-orange-500/30",
+    badgeClass: "border bg-orange-900/30 text-orange-300 border-orange-500/30",
   },
   {
     key: "Attending",
@@ -17,7 +17,7 @@ export const IDAC_DISPOSITIONS = [
     filterKey: "Attending",
     color: "#14B8A6",
     borderClass: "border-teal-500",
-    badgeClass: "bg-emerald-900/30 text-emerald-300 border-emerald-500/30",
+    badgeClass: "border bg-emerald-900/30 text-emerald-300 border-emerald-500/30",
   },
   {
     key: "Busy",
@@ -26,7 +26,7 @@ export const IDAC_DISPOSITIONS = [
     filterKey: "Busy",
     color: "#0d9488",
     borderClass: "border-amber-500",
-    badgeClass: "bg-yellow-900/30 text-yellow-300 border-yellow-500/30",
+    badgeClass: "border bg-yellow-900/30 text-yellow-300 border-yellow-500/30",
   },
   {
     key: "No Answer",
@@ -35,7 +35,7 @@ export const IDAC_DISPOSITIONS = [
     filterKey: "No Answer",
     color: "#38bdf8",
     borderClass: "border-gray-500",
-    badgeClass: "bg-sky-900/30 text-sky-300 border-sky-500/30",
+    badgeClass: "border bg-sky-900/30 text-sky-300 border-sky-500/30",
   },
   {
     key: "Not Attending",
@@ -44,7 +44,7 @@ export const IDAC_DISPOSITIONS = [
     filterKey: "Not Attending",
     color: "#2563eb",
     borderClass: "border-orange-500",
-    badgeClass: "bg-blue-900/30 text-blue-300 border-blue-500/30",
+    badgeClass: "border bg-blue-900/30 text-blue-300 border-blue-500/30",
   },
   {
     key: "Wrong Number",
@@ -53,7 +53,7 @@ export const IDAC_DISPOSITIONS = [
     filterKey: "Wrong Number",
     color: "#8B5CF6",
     borderClass: "border-purple-500",
-    badgeClass: "bg-purple-900/30 text-purple-300 border-purple-500/30",
+    badgeClass: "border bg-purple-900/30 text-purple-300 border-purple-500/30",
   },
 ];
 
@@ -72,7 +72,7 @@ const BADGE_BY_KEY = Object.fromEntries(
 /** Badge classes for raw disposition strings (incl. Futwork aliases like Na). */
 export function getIdacDispositionBadgeClass(disposition) {
   const raw = String(disposition || "").trim();
-  if (!raw) return "bg-gray-900/30 text-gray-300 border-gray-500/30";
+  if (!raw) return "border bg-gray-900/30 text-gray-300 border-gray-500/30";
   if (BADGE_BY_KEY[raw]) return BADGE_BY_KEY[raw];
   const lower = raw.toLowerCase();
   if (lower === "na" || lower === "no answer") return BADGE_BY_KEY["No Answer"];
@@ -82,7 +82,7 @@ export function getIdacDispositionBadgeClass(disposition) {
       d.label.toLowerCase() === lower ||
       d.filterKey.toLowerCase() === lower
   );
-  return match?.badgeClass || "bg-gray-900/30 text-gray-300 border-gray-500/30";
+  return match?.badgeClass || "border bg-gray-900/30 text-gray-300 border-gray-500/30";
 }
 
 export function normalizeDispositionChartLabel(key) {

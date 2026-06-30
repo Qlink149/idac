@@ -49,6 +49,7 @@ import {
   IDAC_DISPOSITION_FILTER_OPTIONS,
   getIdacDispositionBadgeClass,
 } from "../lib/idacDispositions";
+import { getCallStatusBadgeClass } from "../lib/callStatusBadges";
 
 const PAGE_SIZE = 50;
 const ROW_HEIGHT = 64; // px, matches the grid row's effective height
@@ -71,15 +72,7 @@ const formatDate = (dateStr) => formatDateTimeIST(dateStr);
 
 const getDispositionBadge = (d) => getIdacDispositionBadgeClass(d);
 
-const STATUS_STYLES = {
-  completed: "bg-emerald-900/30 text-emerald-300",
-  "no-answer": "bg-yellow-900/30 text-yellow-300",
-  busy: "bg-orange-900/30 text-orange-300",
-  failed: "bg-red-900/30 text-red-300",
-};
-
-const getStatusBadge = (s) =>
-  STATUS_STYLES[s] || "bg-gray-900/30 text-gray-300";
+const getStatusBadge = (s) => getCallStatusBadgeClass(s);
 
 const StatusIcon = ({ status }) => {
   switch (status) {
@@ -150,11 +143,11 @@ const CallRow = memo(
 
         {/* Status */}
         <div>
-          <span
-            className={`px-2 py-1 rounded text-xs flex items-center gap-1 w-fit ${getStatusBadge(
-              call.status
-            )}`}
-          >
+            <span
+              className={`px-2 py-1 rounded text-xs flex items-center gap-1 w-fit ${getStatusBadge(
+                call.status
+              )}`}
+            >
             <StatusIcon status={call.status} />
             <span className="capitalize">{call.status}</span>
           </span>
