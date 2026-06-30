@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { navigateToCustomerDetail } from "../../lib/featureAccess";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
@@ -212,7 +213,7 @@ const NotificationBell = ({ darkMode }) => {
                           handleMarkRead(notification.id);
                           if (notification.lead_id) {
                             setShowNotifications(false);
-                            navigate(`/customer/${notification.lead_id}`);
+                            navigateToCustomerDetail(navigate, notification.lead_id);
                           }
                         }}
                         className={`px-4 py-3 border-b ${

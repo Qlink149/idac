@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { navigateToCustomerDetail } from "../lib/featureAccess";
 import { motion } from "framer-motion";
 import { Bell, ArrowLeft, AlertTriangle, Phone, Calendar, Clock, Sparkles } from "lucide-react";
 import { notificationsAPI } from "../lib/api";
@@ -144,7 +145,7 @@ const NotificationsPage = () => {
                       }`}
                       onClick={() => {
                         markOne(n.id);
-                        if (n.lead_id) navigate(`/customer/${n.lead_id}`);
+                        if (n.lead_id) navigateToCustomerDetail(navigate, n.lead_id);
                       }}
                     >
                       <motion.div

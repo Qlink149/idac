@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { api } from "../lib/api";
 import { parseCallTranscriptTurns, WHITELABEL_AGENT_LABEL } from "../utils/callTranscript";
 import { formatDateTimeIST } from "../lib/dateUtils";
+import { isVirtualCustomerLocked, navigateToVirtualCustomer } from "../lib/featureAccess";
 import { getIdacDispositionBadgeClass } from "../lib/idacDispositions";
 
 const formatDuration = (seconds) => {
@@ -291,7 +292,7 @@ const CallDetailDialog = ({ open, onOpenChange, call, onDispositionChange }) => 
                       <p className="text-white font-mono text-sm truncate">
                         {call.lead_id || "N/A"}
                       </p>
-                      {!call.lead_id && call.phone ? (
+                      {!call.lead_id && call.phone && !isVirtualCustomerLocked() ? (
                         <Button
                           type="button"
                           variant="outline"
@@ -302,7 +303,10 @@ const CallDetailDialog = ({ open, onOpenChange, call, onDispositionChange }) => 
                               search: call.phone,
                               futwork_sync_status: "all",
                             });
-                            navigate(`/virtual-customer?${q.toString()}`);
+                            navigateToVirtualCustomer(
+                              navigate,
+                              `/virtual-customer?${q.toString()}`
+                            );
                           }}
                         >
                           Find in Virtual Customer

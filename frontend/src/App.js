@@ -132,9 +132,11 @@ function AppRoutes() {
         <Route
           path="customer/:id"
           element={
-            <PageSuspense>
-              <CustomerDetailPage />
-            </PageSuspense>
+            <FeatureGate featureKey="virtualCustomer" lockedTitle="Virtual Customer">
+              <PageSuspense>
+                <CustomerDetailPage />
+              </PageSuspense>
+            </FeatureGate>
           }
         />
         <Route

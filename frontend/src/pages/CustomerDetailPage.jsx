@@ -37,6 +37,7 @@ import EmptyState from "../components/feedback/EmptyState";
 import { CustomerDetailSkeleton } from "../components/feedback/Skeletons";
 import { api } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import { getVirtualCustomerHomePath } from "../lib/featureAccess";
 import { formatDateTimeIST } from "../lib/dateUtils";
 import { formatDuration } from "../lib/formatDuration";
 // CONTEXT_UPDATES_HIDDEN — re-enable when context timeline is fixed
@@ -109,7 +110,7 @@ const CustomerDetailPage = () => {
       console.error("Error fetching lead:", error);
       if (error?.response?.status === 403) {
         toast.error("This lead is locked. Contact the Clara team to unlock Virtual Customer.");
-        navigate("/virtual-customer", { replace: true });
+        navigate(getVirtualCustomerHomePath(isAdmin), { replace: true });
         return;
       }
       toast.error("Failed to load customer details");
@@ -254,7 +255,7 @@ const CustomerDetailPage = () => {
             description="This lead may have been removed or merged. Head back to the customer list and try again."
             action={{
               label: "Back to Customers",
-              onClick: () => navigate("/virtual-customer"),
+              onClick: () => navigate(getVirtualCustomerHomePath(isAdmin)),
               icon: ArrowLeft,
             }}
           />
@@ -273,7 +274,7 @@ const CustomerDetailPage = () => {
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            onClick={() => navigate("/virtual-customer")}
+            onClick={() => navigate(getVirtualCustomerHomePath(isAdmin))}
             className="flex items-center gap-2 text-[#A1A1AA] hover:text-white mb-4 transition-colors"
             data-testid="back-to-customers-btn"
           >

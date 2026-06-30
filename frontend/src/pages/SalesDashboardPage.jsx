@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { navigateToCustomerDetail } from "../lib/featureAccess";
 import { analyticsAPI } from "../lib/api";
 import { toast } from "sonner";
 import {
@@ -631,7 +632,7 @@ const SalesDashboardPage = () => {
                       key={lead.id}
                       onClick={() => {
                         closeRepModal();
-                        navigate(`/customer/${lead.id}`);
+                        navigateToCustomerDetail(navigate, lead.id);
                       }}
                       className="flex items-center gap-3 p-3 rounded-lg bg-black/30 border border-white/5 hover:border-[#C5A059]/30 cursor-pointer transition-all group"
                       data-testid={`drilldown-lead-${lead.id}`}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { navigateToCustomerDetail } from "../lib/featureAccess";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import { toast } from "sonner";
@@ -172,7 +173,7 @@ const MyDashboardPage = () => {
               <motion.button
                 key={lead.id}
                 type="button"
-                onClick={() => navigate(`/customer/${lead.id}`)}
+                onClick={() => navigateToCustomerDetail(navigate, lead.id)}
                 className="w-full flex items-center justify-between p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-[#C5A059]/30 text-left transition-colors"
                 whileHover={{ x: 4 }}
               >

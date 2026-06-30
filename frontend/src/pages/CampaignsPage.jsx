@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { navigateToVirtualCustomer } from "../lib/featureAccess";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -637,7 +638,8 @@ const CampaignsPage = () => {
                                   type="button"
                                   className="text-left hover:text-[#C5A059] underline-offset-2 hover:underline truncate max-w-full"
                                   onClick={() =>
-                                    navigate(
+                                    navigateToVirtualCustomer(
+                                      navigate,
                                       `/virtual-customer?campaignId=${encodeURIComponent(row.id)}`
                                     )
                                   }

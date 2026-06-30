@@ -1,5 +1,8 @@
+import { toast } from "sonner";
+import { BRAND } from "./brandConfig";
+
 export const LOCKED_FEATURES = {
-  virtualCustomer: "preview",
+  virtualCustomer: true,
   salesDashboard: true,
   marketingDashboard: true,
   notifications: true,
@@ -35,3 +38,39 @@ export const isPathLocked = (path) => {
 
 export const isPathPreview = (path) =>
   path === "/virtual-customer" && isVcPreviewMode();
+
+export const isVirtualCustomerLocked = () => isFeatureLocked("virtualCustomer");
+
+export function getVirtualCustomerHomePath(isAdmin = false) {
+  if (isVirtualCustomerLocked()) {
+    return isAdmin ? "/dashboard" : "/my-dashboard";
+  }
+  return "/virtual-customer";
+}
+
+function showVirtualCustomerLockedToast() {
+  toast.info("Virtual Customer is locked", {
+    description: BRAND.supportMessage,
+  });
+}
+
+/** Navigate to Virtual Customer list/search — blocked when feature is locked. */
+export function navigateToVirtualCustomer(navigate, path = "/virtual-customer") {
+  if (isVirtualCustomerLocked()) {
+    showVirtualCustomerLockedToast();
+    return false;
+  }
+  navigate(path);
+  return true;
+}
+
+/** Navigate to a lead profile — same lock as Virtual Customer. */
+export function navigateToCustomerDetail(navigate, leadId) {
+  if (!leadId) return false;
+  if (isVirtualCustomerLocked()) {
+    showVirtualCustomerLockedToast();
+    return false;
+  }
+  navigate(`/customer/${leadId}`);
+  return true;
+}

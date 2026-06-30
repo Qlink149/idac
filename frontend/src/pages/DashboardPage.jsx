@@ -9,7 +9,6 @@ import {
   mapDispositionBreakdown,
   parseProjectsPayload,
   buildStatsParams,
-  buildVirtualDrillParams,
   buildAICallingDrillParams,
   formatDashboardNumber,
   REGIONAL_COLORS,
@@ -60,7 +59,7 @@ import {
 } from "../components/ui/tooltip";
 import { BRAND } from "../lib/brandConfig";
 import { IDAC_DISPOSITIONS } from "../lib/idacDispositions";
-import { isFeatureLocked, SHOW_PROJECT_DISTRIBUTION } from "../lib/featureAccess";
+import { isFeatureLocked, SHOW_PROJECT_DISTRIBUTION, navigateToVirtualCustomer } from "../lib/featureAccess";
 
 const LEAD_CRITERIA = {
   attending: {
@@ -174,10 +173,14 @@ const DashboardPage = () => {
 
   const handleProjectClick = (projectName) => {
     if (projectName === "__none__") {
-      navigate("/virtual-customer?project=__none__&futwork_sync_status=all");
+      navigateToVirtualCustomer(
+        navigate,
+        "/virtual-customer?project=__none__&futwork_sync_status=all"
+      );
       return;
     }
-    navigate(
+    navigateToVirtualCustomer(
+      navigate,
       `/virtual-customer?project=${encodeURIComponent(projectName)}&futwork_sync_status=all`
     );
   };
@@ -214,16 +217,6 @@ const DashboardPage = () => {
     navigate(`/ai-calling?${params.toString()}`);
   };
 
-  const handleStatClick = (bucket) => {
-    const params = buildVirtualDrillParams(
-      bucket,
-      timeFilter,
-      "all",
-      dateRange
-    );
-    navigate(`/virtual-customer?${params.toString()}`);
-  };
-
   const handleDispositionDrill = (disposition) => {
     if (!disposition) return;
     const params = buildAICallingDrillParams(
@@ -250,20 +243,6 @@ const DashboardPage = () => {
   const statTileInteractive =
     "card-hover cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059]/50";
 
-  const statTileProps = (bucket) => {
-    if (bucket === null) return {};
-    return {
-      role: "button",
-      tabIndex: 0,
-      onClick: () => handleStatClick(bucket),
-      onKeyDown: (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleStatClick(bucket);
-        }
-      },
-    };
-  };
   const isInitialLoading = loading && !hasLoadedOnce;
   const isRefetching = loading && hasLoadedOnce;
   const displayStat = (key) => {
@@ -413,7 +392,7 @@ const DashboardPage = () => {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
               >
                 <div
-                  className={`glass-card rounded-lg p-6 ${statTileInteractive}`}
+                  className="glass-card rounded-lg p-6"
                   data-testid="total-leads-tile"
                 >
                   <div className="flex items-center justify-between mb-4">
@@ -426,9 +405,8 @@ const DashboardPage = () => {
                 </div>
 
                 <div
-                  className={`glass-card rounded-lg p-6 ${statTileInteractive}`}
+                  className="glass-card rounded-lg p-6"
                   data-testid="total-min-tile"
-                  {...statTileProps("total_min")}
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 rounded-lg bg-orange-500/20 flex items-center justify-center">
@@ -440,8 +418,8 @@ const DashboardPage = () => {
                 </div>
 
                 <div
-                  className={`glass-card rounded-lg p-6 ${statTileInteractive}`}
-                  {...statTileProps("total_calls")}
+                  className="glass-card rounded-lg p-6"
+                  data-testid="total-calls-tile"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
@@ -453,8 +431,8 @@ const DashboardPage = () => {
                 </div>
 
                 <div
-                  className={`glass-card rounded-lg p-6 ${statTileInteractive}`}
-                  {...statTileProps("avg_duration")}
+                  className="glass-card rounded-lg p-6"
+                  data-testid="avg-duration-tile"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
