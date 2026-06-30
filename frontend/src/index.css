@@ -89,6 +89,81 @@
     color: rgba(255, 255, 255, 0.75) !important;
 }
 
+/*
+ * Login page: always dark cinematic UI (saved light-mode preference
+ * applies after sign-in; global .light-mode overrides break this layout).
+ */
+.light-mode .login-page {
+    background-color: #0A0A0A !important;
+    color: #EDEDED !important;
+}
+
+.light-mode .login-page .bg-\[\#0A0A0A\] {
+    background-color: #0A0A0A !important;
+}
+
+.light-mode .login-page .bg-\[\#1A1A1A\] {
+    background-color: #1A1A1A !important;
+}
+
+.light-mode .login-page .from-\[\#0A0A0A\] {
+    --tw-gradient-from: #0A0A0A var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgb(10 10 10 / 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.light-mode .login-page .via-\[\#0A0A0A\]\/70 {
+    --tw-gradient-via: rgb(10 10 10 / 0.7) var(--tw-gradient-via-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to) !important;
+}
+
+.light-mode .login-page .glass-card {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.light-mode .login-page h1,
+.light-mode .login-page .text-\[\#EDEDED\] {
+    color: #EDEDED !important;
+}
+
+.light-mode .login-page .text-\[\#A1A1AA\] {
+    color: #A1A1AA !important;
+}
+
+.light-mode .login-page .text-\[\#52525B\] {
+    color: #52525B !important;
+}
+
+.light-mode .login-page .text-white {
+    color: #FFFFFF !important;
+}
+
+.light-mode .login-page .bg-black\/50 {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.light-mode .login-page .border-white\/20 {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.light-mode .login-page input,
+.light-mode .login-page textarea {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #FFFFFF !important;
+}
+
+.light-mode .login-page input::placeholder,
+.light-mode .login-page textarea::placeholder {
+    color: #71717A !important;
+}
+
+.light-mode .login-page .hover\:text-white:hover {
+    color: #FFFFFF !important;
+}
+
 .light-mode .text-\[\#A1A1AA\] {
     color: #4A4A5A !important;
 }

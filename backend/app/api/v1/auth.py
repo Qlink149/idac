@@ -22,7 +22,8 @@ router = APIRouter()
 
 @router.post("/register", response_model=UserResponse)
 async def register(user_data: UserCreate, db=Depends(get_db)):
-    existing = await db.users.find_one({"email": user_data.email})
+    email = str(user_data.email).strip().lower()
+    existing = await db.users.find_one({"email": email})
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -31,7 +32,7 @@ async def register(user_data: UserCreate, db=Depends(get_db)):
     role = user_data.role if user_data.role in ("admin", "sales") else "sales"
     user_doc = {
         "id": user_id,
-        "email": user_data.email,
+        "email": email,
         "full_name": user_data.full_name,
         "role": role,
         "hashed_password": hash_password(user_data.password),
@@ -44,7 +45,7 @@ async def register(user_data: UserCreate, db=Depends(get_db)):
     await db.users.insert_one(user_doc)
     return UserResponse(
         id=user_id,
-        email=user_data.email,
+        email=email,
         full_name=user_data.full_name,
         role=role,
         is_active=True,
@@ -54,7 +55,8 @@ async def register(user_data: UserCreate, db=Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db=Depends(get_db)):
-    user = await db.users.find_one({"email": form_data.username}, {"_id": 0})
+    email = (form_data.username or "").strip().lower()
+    user = await db.users.find_one({"email": email}, {"_id": 0})
     if not user or not verify_password(form_data.password, user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Incorrect email or password")
 

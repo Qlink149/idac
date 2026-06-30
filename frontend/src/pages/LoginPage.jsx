@@ -2,21 +2,19 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
 import { toast } from "sonner";
-import { Eye, EyeOff, Building2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { BRAND } from "../lib/brandConfig";
 import BrandLogo from "../components/shared/BrandLogo";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("digital.marketing@idac.com");
-  const [password, setPassword] = useState("idac@123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showTransition, setShowTransition] = useState(false);
   const [error, setError] = useState("");
   const { login } = useAuth();
-  const { darkMode } = useTheme();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -39,27 +37,8 @@ const LoginPage = () => {
     }
   };
 
-  const handleDemoLogin = async () => {
-    setEmail("digital.marketing@idac.com");
-    setPassword("idac@123");
-
-    try {
-      setIsLoading(true);
-      setError("");
-      const me = await login("digital.marketing@idac.com", "idac@123");
-      setShowTransition(true);
-      const dest = me?.role === "admin" ? "/dashboard" : "/my-dashboard";
-      setTimeout(() => {
-        navigate(dest, { replace: true });
-      }, 3000);
-    } catch (err) {
-      setError("Failed to login with demo account");
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#0A0A0A]">
+    <div className="login-page min-h-screen relative overflow-hidden bg-[#0A0A0A]">
       <motion.div
         className="absolute inset-0 z-0"
         initial={{ scale: 1.1, y: 50 }}
@@ -88,7 +67,7 @@ const LoginPage = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <BrandLogo variant="splash" darkBackground={darkMode} className="mb-8" />
+              <BrandLogo variant="splash" darkBackground className="mb-8" />
             </motion.div>
             <motion.div className="relative w-full max-w-2xl h-48 overflow-hidden">
               <motion.div
@@ -157,7 +136,7 @@ const LoginPage = () => {
             transition={{ delay: 0.8 }}
             data-testid="login-logo"
           >
-            <BrandLogo variant="login" darkBackground={darkMode} testId="login-logo" />
+            <BrandLogo variant="login" darkBackground testId="login-logo" />
           </motion.div>
 
           <motion.div
@@ -181,7 +160,7 @@ const LoginPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full h-12 px-4 bg-black/50 border border-white/20 rounded-md text-white focus:border-[#C5A059] transition-colors"
-                  placeholder="digital.marketing@idac.com"
+                  placeholder="you@idacexpo.in"
                   required
                   data-testid="login-email-input"
                 />
@@ -228,19 +207,6 @@ const LoginPage = () => {
                 data-testid="login-submit-btn"
               >
                 {isLoading ? "Signing in..." : "Sign In"}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDemoLogin}
-                disabled={isLoading}
-                className="w-full h-12 btn-gold-outline font-medium rounded-none disabled:opacity-50"
-                data-testid="demo-login-btn"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <Building2 size={18} />
-                  Demo Login as utpal
-                </span>
               </button>
             </form>
 
